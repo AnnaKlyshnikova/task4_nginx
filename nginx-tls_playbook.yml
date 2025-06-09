@@ -1,0 +1,28 @@
+---
+- name: Generate tls certificates for nginx
+  hosts: all
+  become: true
+  vars:
+    ssl_dir: /etc/nginx/ssl
+    ca_key: "{{ ssl_dir }}/rootCA.key"
+    ca_cert: "{{ ssl_dir }}/rootCA.pem"
+    csr_file: "{{ ssl_dir }}/task-service.local.csr"
+    server_key: "{{ ssl_dir }}/task-service.local.key"
+    server_cert: "{{ ssl_dir }}/task-service.local.crt"
+  tasks:
+    - name: Run TLS role
+      ansible.builtin.import_role:
+          name: tls
+
+- name: Configure nginx
+  hosts: all
+  become: true
+  vars:
+    nginx_conf_dir: /etc/nginx/sites-available
+    nginx_conf_file: task-service.local
+    ssl_dir: /etc/nginx/ssl
+  tasks:
+    - name: Run Nginx role
+      ansible.builtin.import_role:
+          name: nginx 
+

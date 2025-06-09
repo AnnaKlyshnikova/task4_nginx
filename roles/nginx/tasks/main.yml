@@ -1,0 +1,25 @@
+---
+# tasks file for roles/nginx
+- name: Install nginx
+  apt:
+    name: nginx
+    state: present
+    update_cache: true
+
+- name: Add configuration for task-service.local
+  template:
+    src: templates/task-service.local.j2
+    dest: "{{ nginx_conf_dir }}/{{ nginx_conf_file }}"
+
+- name: Symlink sites-enabled
+  file:
+    src: "{{ nginx_conf_dir }}/{{ nginx_conf_file }}"
+    dest: "/etc/nginx/sites-enabled/{{ nginx_conf_file }}"
+    state: link
+    force: true
+
+- name: Restart nginx
+  service:
+    name: nginx
+    state: restarted
+    enabled: true
